@@ -7,7 +7,16 @@
 //
 
 import Foundation
+import UIKit
 
 protocol PhotoCellDelegate: AnyObject {
     func showActionSheet(tag: Int)
+}
+
+protocol SettingsDelegate: AnyObject {
+    func setVerticalScroll()
+    func setHorizontalScroll()
+
+    func darkModeOn()
+    func darkModeOff()
 }

@@ -9,27 +9,52 @@
 import UIKit
 
 class PhotoJournalViewController: UIViewController {
-
-    // TODO: Connect Settings button to SettingsVC
     
-    
+    // MARK: - IBOutlets
     @IBOutlet weak var photoJournalCollectionView: UICollectionView!
     
+    // MARK: - Internal Properties
+    var verticalScrollDirection = true {
+        didSet {
+            UserDefaultsWrapper.manager.store(scrollDirection: verticalScrollDirection)
+        }
+    }
+    var darkModeIsOn = false {
+        didSet {
+            UserDefaultsWrapper.manager.store(darkMode: darkModeIsOn)
+        }
+    }
+
     var photoJournal = [PhotoJournal]() {
         didSet {
             photoJournalCollectionView.reloadData()
         }
     }
     
+    // MARK: - Lifecycle Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCollectionView()
+        loadUserDefaults()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         loadPhotoJournal()
     }
 
+    // MARK: - IBActions
+    @IBAction func settingsButtonPressed(_ sender: UIButton) {
+        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+        
+        let settingsVC = storyboard.instantiateViewController(identifier: "SettingsVC") as! SettingsViewController
+        self.navigationController?.pushViewController(settingsVC, animated: true)
+        
+        settingsVC.delegate = self
+        settingsVC.isVerticalScroll = verticalScrollDirection
+        settingsVC.darkModeOn = darkModeIsOn
+    }
+    
+    // MARK: - Private Methods
     private func configureCollectionView() {
         photoJournalCollectionView.dataSource = self
     }
@@ -44,10 +69,19 @@ class PhotoJournalViewController: UIViewController {
         }
     }
     
-    
+    private func loadUserDefaults() {
+        if let shouldDarkMode = UserDefaultsWrapper.manager.getColorMode() {
+            darkModeIsOn = shouldDarkMode
+        }
+        
+        if let shouldVerticalScroll = UserDefaultsWrapper.manager.getScrollDirection() {
+            verticalScrollDirection = shouldVerticalScroll
+        }
+    }
 
 }
 
+// MARK: - CollectionView Delegate Methods
 extension PhotoJournalViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return photoJournal.count
@@ -66,10 +100,9 @@ extension PhotoJournalViewController: UICollectionViewDataSource {
         
         return cell
     }
-
-    
 }
 
+// MARK: - PhotoCell Delegate Methods
 extension PhotoJournalViewController: PhotoCellDelegate {
     func showActionSheet(tag: Int) {
         let selectedPhoto = self.photoJournal[tag]
@@ -78,7 +111,7 @@ extension PhotoJournalViewController: PhotoCellDelegate {
         
         let deleteAction = UIAlertAction.init(title: "Delete", style: .destructive) { (action) in
             do {
-                try PhotoPersistenceHelper.manager.deletePhotoJournal(withTitle: selectedPhoto.title)
+                try PhotoPersistenceHelper.manager.deletePhotoJournal(with: tag)
                 self.loadPhotoJournal()
             } catch {
                 let alertVC = UIAlertController(title: "Error", message: "Could not delete photo entry!", preferredStyle: .alert)
@@ -89,13 +122,20 @@ extension PhotoJournalViewController: PhotoCellDelegate {
         }
         
         let editAction = UIAlertAction.init(title: "Edit", style: .default) { (action) in
-            // add edit functionality using persistence
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let editVC = storyboard.instantiateViewController(identifier: "editPhotoSB") as EditPhotoViewController
+            self.navigationController?.pushViewController(editVC, animated: true)
+            
+            editVC.currentPhotoEntry = selectedPhoto
+            editVC.currentTag = tag
     
         }
         
         let shareAction = UIAlertAction.init(title: "Share", style: .default) { (action) in
-            // add share functionality using persistence
-    
+            if let photo = UIImage(data: self.photoJournal[tag].photoData) {
+            let activityVC = UIActivityViewController(activityItems: [photo, self.photoJournal[tag].title], applicationActivities: nil)
+            self.present(activityVC, animated: true, completion: nil)
+            }
         }
         
         let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
@@ -109,3 +149,34 @@ extension PhotoJournalViewController: PhotoCellDelegate {
         
     }
 }
+
+// MARK: - Settings Delegate Methods
+extension PhotoJournalViewController: SettingsDelegate, UICollectionViewDelegateFlowLayout {
+    func setVerticalScroll() {
+        self.verticalScrollDirection = true
+        
+        if let flowLayout = photoJournalCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            flowLayout.scrollDirection = .vertical
+        }
+    }
+    
+    func setHorizontalScroll() {
+        self.verticalScrollDirection = false
+        
+        if let flowLayout = photoJournalCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                flowLayout.scrollDirection = .horizontal
+            }
+    }
+    
+    func darkModeOn() {
+        self.photoJournalCollectionView.backgroundColor = .black
+        self.darkModeIsOn = true
+    }
+    
+    func darkModeOff() {
+        self.photoJournalCollectionView.backgroundColor = .lightGray
+        self.darkModeIsOn = false
+    }
+    
+}
+

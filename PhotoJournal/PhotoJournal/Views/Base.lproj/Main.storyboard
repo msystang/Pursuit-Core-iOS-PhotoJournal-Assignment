@@ -78,6 +78,7 @@
                                             </constraints>
                                         </collectionViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="tintColor" red="0.068610203375657" green="0.47916005710659904" blue="0.140337957561702" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <size key="customSize" width="379" height="376"/>
                                         <connections>
                                             <outlet property="dateLabel" destination="6pK-zz-DH3" id="JMq-q8-cCn"/>
@@ -120,7 +121,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Settings"/>
                                 <connections>
-                                    <segue destination="S5y-02-xtY" kind="show" id="qeR-u0-9hA"/>
+                                    <action selector="settingsButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fsW-i5-V4T"/>
                                 </connections>
                             </button>
                         </barButtonItem>
@@ -196,7 +197,10 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="cameraButton" destination="d0u-US-Pff" id="God-Jq-aZ3"/>
                         <outlet property="photoImageView" destination="O5d-lP-Vnr" id="hQr-F9-EJs"/>
+                        <outlet property="photoLibraryButton" destination="LnR-Nd-IGv" id="khQ-RC-L6g"/>
+                        <outlet property="saveButton" destination="fzj-Ea-NPl" id="nzZ-pk-ymy"/>
                         <outlet property="titleTextView" destination="aK9-BB-r9V" id="Vmb-tt-212"/>
                     </connections>
                 </viewController>
@@ -207,34 +211,58 @@
         <!--Settings-->
         <scene sceneID="jMq-Pa-laA">
             <objects>
-                <viewController storyboardIdentifier="settingsSB" id="S5y-02-xtY" customClass="SettingsViewController" customModule="PhotoJournal" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SettingsVC" id="S5y-02-xtY" customClass="SettingsViewController" customModule="PhotoJournal" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bDE-X5-0vm">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Horizontal Scroll" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fzW-5I-fYG">
-                                <rect key="frame" x="145" y="207" width="126" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dark Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w7s-3X-26R">
+                                <rect key="frame" x="165" y="442.5" width="84" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="RGB-2g-fzw">
-                                <rect key="frame" x="183" y="236" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vertical Scroll" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fzW-5I-fYG">
+                                <rect key="frame" x="154.5" y="330.5" width="105" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RGB-2g-fzw">
+                                <rect key="frame" x="182.5" y="361.5" width="51" height="31"/>
+                                <connections>
+                                    <action selector="switchScrollDirectionChanged:" destination="S5y-02-xtY" eventType="valueChanged" id="Ea9-ei-xRa"/>
+                                </connections>
                             </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Background Color" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w7s-3X-26R">
-                                <rect key="frame" x="138" y="376" width="138" height="21"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Bcs-aL-eMJ">
+                                <rect key="frame" x="20" y="151" width="110" height="200"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            </stackView>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="UNS-tz-RON">
+                                <rect key="frame" x="182.5" y="473.5" width="51" height="31"/>
+                                <connections>
+                                    <action selector="switchDarkModeChanged:" destination="S5y-02-xtY" eventType="valueChanged" id="mV8-HU-LgH"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="fzW-5I-fYG" firstAttribute="centerX" secondItem="RGB-2g-fzw" secondAttribute="centerX" id="3SB-k0-NdU"/>
+                            <constraint firstItem="w7s-3X-26R" firstAttribute="centerY" secondItem="YZY-Ee-3B7" secondAttribute="centerY" id="U4N-d2-n0h"/>
+                            <constraint firstItem="w7s-3X-26R" firstAttribute="centerX" secondItem="YZY-Ee-3B7" secondAttribute="centerX" id="Vfj-XG-YOV"/>
+                            <constraint firstItem="w7s-3X-26R" firstAttribute="top" secondItem="RGB-2g-fzw" secondAttribute="bottom" constant="50" id="Vz3-5X-Erw"/>
+                            <constraint firstItem="RGB-2g-fzw" firstAttribute="top" secondItem="fzW-5I-fYG" secondAttribute="bottom" constant="10" id="ZyY-Bd-Fcu"/>
+                            <constraint firstItem="RGB-2g-fzw" firstAttribute="centerX" secondItem="w7s-3X-26R" secondAttribute="centerX" id="juh-Z5-LRf"/>
+                            <constraint firstItem="UNS-tz-RON" firstAttribute="centerX" secondItem="w7s-3X-26R" secondAttribute="centerX" id="o4Q-en-EkD"/>
+                            <constraint firstItem="UNS-tz-RON" firstAttribute="top" secondItem="w7s-3X-26R" secondAttribute="bottom" constant="10" id="x9W-LB-kCd"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="YZY-Ee-3B7"/>
                     </view>
                     <navigationItem key="navigationItem" title="Settings" id="PU0-ti-KMI"/>
+                    <connections>
+                        <outlet property="darkModeSwitch" destination="UNS-tz-RON" id="04S-NW-xRk"/>
+                        <outlet property="scrollSwitch" destination="RGB-2g-fzw" id="PtX-q3-wEP"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ckB-Bb-7Hy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
